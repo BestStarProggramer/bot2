@@ -31,3 +31,17 @@ async def get_or_create_user(tg_user):
         await session.commit()
 
         return user
+
+async def update_user_gender(user_id: int, gender: str):
+    async with SessionLocal() as session:
+        async with session.begin():
+            result = await session.execute(
+                select(User).where(User.telegram_id == user_id)
+            )
+            user = result.scalar_one_or_none()
+            
+            if user:
+                user.gender = gender
+                await session.commit()
+            else:
+                pass

@@ -26,6 +26,7 @@ class User(Base):
 
     display_name = Column(String, nullable=True)
 
+    is_premium = Column(Boolean, default=False)
     gender = Column(String, default="unknown")
 
     created_at = Column(DateTime, default=datetime.utcnow)
