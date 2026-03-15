@@ -8,6 +8,7 @@ from services.user_service import get_or_create_user, update_user_gender
 from services.group_service import get_group_by_code, join_group
 from services.permission_service import can_create_group
 from keyboards.common_keyboards import get_start_keyboard, get_gender_keyboard, get_main_menu_keyboard
+from handlers.group_handler import GroupNameState
 
 router = Router()
 
@@ -59,10 +60,11 @@ async def set_gender_handler(callback: CallbackQuery):
     await callback.answer()
 
 @router.callback_query(F.data == "try_create_group")
-async def try_create_group_handler(callback: CallbackQuery):
+async def try_create_group_handler(callback: CallbackQuery, state: FSMContext): 
     user = await get_or_create_user(callback.from_user)
     if can_create_group(user):
         await callback.message.answer("Введи название для твоей новой группы:")
+        await state.set_state(GroupNameState.waiting_for_name)
     else:
         await callback.message.answer("🔒 Создание групп доступно по подписке.")
     await callback.answer()

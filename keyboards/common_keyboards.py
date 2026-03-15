@@ -4,14 +4,15 @@ def get_start_keyboard():
     buttons = [
         [InlineKeyboardButton(text="📅 Календарь", callback_data="view_calendar")],
         [InlineKeyboardButton(text="👤 Привязать ФИО", callback_data="claim_student")],
-        [InlineKeyboardButton(text="👥 Мои группы", callback_data="my_groups")]
+        [InlineKeyboardButton(text="👥 Мои группы", callback_data="my_groups")],
+        [InlineKeyboardButton(text="➕ Создать группу", callback_data="try_create_group")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 def get_gender_keyboard(join_code: str = "none"):
     buttons = [
-        [InlineKeyboardButton(text="👨 Мужской", callback_data=f"set_gender_male_{join_code}")],
-        [InlineKeyboardButton(text="👩 Женский", callback_data=f"set_gender_female_{join_code}")]
+        [InlineKeyboardButton(text="Мужской", callback_data=f"set_gender_male_{join_code}")],
+        [InlineKeyboardButton(text="ЖЕНЩИНА!!!!", callback_data=f"set_gender_female_{join_code}")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 

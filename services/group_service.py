@@ -3,20 +3,24 @@ from sqlalchemy import select
 from database import SessionLocal
 from models import Group, GroupMember, User
 
+
 def generate_invite_code():
     return secrets.token_hex(4)
 
-async def create_group(owner_id, name):
+async def create_group(name: str, creator_id: int):
     async with SessionLocal() as session:
-        code = generate_invite_code()
-        group = Group(name=name, owner_id=owner_id, invite_code=code)
-        session.add(group)
-        await session.commit()
-        await session.refresh(group)
-        member = GroupMember(group_id=group.id, user_id=owner_id, role="headman")
+        invite_code = generate_invite_code()
+        
+        new_group = Group(name=name, creator_id=creator_id, invite_code=invite_code)
+        session.add(new_group)
+        await session.flush()
+        
+        member = GroupMember(user_id=creator_id, group_id=new_group.id, role="admin")
         session.add(member)
+        
         await session.commit()
-        return group
+        await session.refresh(new_group)
+        return new_group
 
 async def get_group_by_code(code):
     async with SessionLocal() as session:

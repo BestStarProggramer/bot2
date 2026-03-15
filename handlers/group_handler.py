@@ -6,7 +6,9 @@ from aiogram.fsm.state import State, StatesGroup
 from services.user_service import get_or_create_user
 from services.group_service import create_group, get_user_groups, get_group_by_id, get_group_member
 from services.permission_service import is_headman, is_assistant, can_manage_queue
+
 from keyboards.group_keyboards import get_group_list_keyboard, get_group_admin_keyboard, get_group_member_keyboard
+from keyboards.common_keyboards import get_start_keyboard
 
 router = Router()
 
@@ -84,14 +86,20 @@ async def group_labs_handler(callback: CallbackQuery):
     group_id = int(callback.data.replace("group_labs_", ""))
     await show_labs_for_group(callback, group_id)
 
-@router.message(F.text, GroupNameState.waiting_for_name)
+@router.message(GroupNameState.waiting_for_name)
 async def group_name_handler(message: Message, state: FSMContext):
-    group_name = message.text.strip()
+    group_name = message.text
     user = await get_or_create_user(message.from_user)
-    group = await create_group(user.id, group_name)
-    invite_link = f"https://t.me/{(await message.bot.get_me()).username}?start=join_{group.invite_code}"
+    
+    group = await create_group(group_name, user.id)
+    
+    invite_link = f"https://t.me/{(await message.bot.get_me()).username}?start={group.invite_code}"
+    
     await message.answer(
-        f"✅ Группа <b>{group_name}</b> создана!\n\nПригласительная ссылка:\n{invite_link}",
-        parse_mode="HTML"
+        f"✅ Группа «{group_name}» успешно создана!\n\n"
+        f"🔗 Ссылка для вступления:\n`{invite_link}`\n\n"
+        "Отправьте эту ссылку одногруппникам.",
+        reply_markup=get_start_keyboard(),
+        parse_mode="Markdown"
     )
     await state.clear()

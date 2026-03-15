@@ -11,7 +11,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship, declarative_base
 from datetime import datetime
 
-Base = declarative_base()
+from database import Base 
 
 
 class User(Base):
@@ -56,6 +56,7 @@ class Group(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
     invite_code = Column(String, unique=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    creator_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     
     members = relationship("GroupMember", back_populates="group", foreign_keys="GroupMember.group_id")
     subjects = relationship("Subject", back_populates="group", foreign_keys="Subject.group_id")
